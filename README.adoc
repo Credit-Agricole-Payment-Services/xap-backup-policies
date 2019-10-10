@@ -1,0 +1,44 @@
+= BackupPolicy implementation for XAP
+
+This project provides a custom implementation of the ```com.gigaspaces.logger.BackupPolicy``` interface.
+
+This implementation provide features for compressing and purging the logs produced by each XAP Grid Component.
+
+Compressing algorithm is ```gzip```.
+
+== Configuration
+
+You generally use XAP 's ```xap_logging.properties``` to configure logging. You can also use System Properties.
+
+In order to use this BackupPolicy, you should configure the ```com.gigaspaces.logger.RollingFileHandler``` with :
+```
+com.gigaspaces.logger.RollingFileHandler.backup-policy = gca.xap.logger.CompressBackupPolicy
+```
+
+Example configuration of the ```gca.xap.logger.CompressBackupPolicy``` :
+
+```
+# (optional) Configures the filename pattern (regexp) of the log files produced by the com.gigaspaces.logger.RollingFileHandler, generally this pattern will match the value of com.gigaspaces.logger.RollingFileHandler.filename-pattern
+# this is useful in order to locate (and process) all files existing on the filesystem prior to the XAP Grid Component startup.
+# when not set, Policy won't be able to know the filepattern, and files existing prior to the XAP Grid Component startup won't be processed.
+gca.xap.logger.CompressBackupPolicy.filename-pattern = /var/log/xap/gigaspaces\-{service}\-{host}\-.*\.log
+
+# (optional) When set, compressed files are produced in this directory. So you can use different filesystems for plain logs and for compressed logs. When no set, compressed files are produced in the directory containing the plain log file.
+gca.xap.logger.CompressBackupPolicy.archivesDirectoryPath = /var/log/xap/archives
+
+# (required) Configures retention for plain log files, when plain log files retention is exceeded, files are compressed
+# it is recommended to use low values, in order to keep filesystem usage low
+gca.xap.logger.CompressBackupPolicy.keepAsIs.minRetentionInMilliseconds = 1800000
+gca.xap.logger.CompressBackupPolicy.keepAsIs.minFilesCount = 2
+gca.xap.logger.CompressBackupPolicy.keepAsIs.maxFilesCount = 10
+
+# (required) Configures retention for compressed files, when compressed files retention is exceeded, files are deleted
+# it is recommended to change values to match you need
+gca.xap.logger.CompressBackupPolicy.keepCompressed.minRetentionInMilliseconds = 604800000
+gca.xap.logger.CompressBackupPolicy.keepCompressed.minFilesCount = 28
+gca.xap.logger.CompressBackupPolicy.keepCompressed.maxFilesCount = 350
+
+# minRetentionInMilliseconds is the minimal duration of that we will keep the files for. (requires > 0)
+# when maxFilesCount is reached, files will be processed even if minRetentionInMilliseconds has not been reached. (requires >= minFilesCount)
+# when minFilesCount is reached, files will be processed unless if minRetentionInMilliseconds has not been reached (requires > 0)
+```
