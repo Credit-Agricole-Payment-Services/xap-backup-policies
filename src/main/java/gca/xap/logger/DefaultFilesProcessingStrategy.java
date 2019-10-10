@@ -16,6 +16,9 @@ public class DefaultFilesProcessingStrategy implements FilesProcessingStrategy {
 
 	@ToString
 	private static final class ProcessingReport {
+		private final AtomicInteger initialFilesCount = new AtomicInteger(0);
+		private final AtomicInteger finalFilesCount = new AtomicInteger(0);
+
 		private final AtomicInteger fileNotFoundCount = new AtomicInteger(0);
 		private final AtomicInteger fileOldEnoughToBeProcessCount = new AtomicInteger(0);
 		private final AtomicInteger fileToProcessCount = new AtomicInteger(0);
@@ -26,6 +29,7 @@ public class DefaultFilesProcessingStrategy implements FilesProcessingStrategy {
 	public void processFilesList(List<File> files, RetentionConfiguration retentionConfiguration, FileCallback fileCallback) {
 		LOGGER.info("processFilesList() : files.size() = " + files.size() + ", retentionConfiguration = " + retentionConfiguration);
 		final ProcessingReport processingReport = new ProcessingReport();
+		processingReport.initialFilesCount.set(files.size());
 		Iterator iterator = files.iterator();
 		while (files.size() > retentionConfiguration.minFilesCount && iterator.hasNext()) {
 			File currentFile = (File) iterator.next();
@@ -55,6 +59,7 @@ public class DefaultFilesProcessingStrategy implements FilesProcessingStrategy {
 				iterator.remove();
 			}
 		}
+		processingReport.finalFilesCount.set(files.size());
 		LOGGER.info("processFilesList() : processingReport = " + processingReport);
 	}
 
