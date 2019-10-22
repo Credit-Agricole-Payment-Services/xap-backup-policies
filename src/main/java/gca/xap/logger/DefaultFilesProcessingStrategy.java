@@ -4,8 +4,8 @@ import lombok.ToString;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +26,7 @@ public class DefaultFilesProcessingStrategy implements FilesProcessingStrategy {
 	}
 
 	@Override
-	public void processFilesList(List<File> files, RetentionConfiguration retentionConfiguration, FileCallback fileCallback) {
+	public void processFilesList(Collection<File> files, RetentionConfiguration retentionConfiguration, FileCallback fileCallback) {
 		LOGGER.info("processFilesList() : files.size() = " + files.size() + ", retentionConfiguration = " + retentionConfiguration);
 		final ProcessingReport processingReport = new ProcessingReport();
 		processingReport.initialFilesCount.set(files.size());

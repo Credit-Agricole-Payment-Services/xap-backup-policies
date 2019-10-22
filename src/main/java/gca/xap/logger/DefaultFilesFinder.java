@@ -12,6 +12,10 @@ public class DefaultFilesFinder implements FilesFinder {
 
 	private final static Logger LOGGER = Logger.getLogger(DefaultFilesFinder.class.getName());
 
+	private final static Comparator<File> filesComparator = Comparator
+			.comparingLong(File::lastModified)
+			.thenComparing(File::getName);
+
 	@Override
 	public List<File> findFiles(File directory, String filenamePattern) {
 		File[] matchingFiles = directory.listFiles((parentDirectory, filename) -> filename.matches(filenamePattern));
@@ -20,9 +24,7 @@ public class DefaultFilesFinder implements FilesFinder {
 			return Arrays
 					.stream(matchingFiles)
 					.sorted(
-							Comparator
-									.comparingLong(File::lastModified)
-									.thenComparing(File::getName)
+							filesComparator
 					)
 					.collect(Collectors.toList());
 		} else {

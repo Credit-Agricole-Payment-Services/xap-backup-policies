@@ -5,9 +5,7 @@ import lombok.AccessLevel;
 import lombok.Setter;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,10 +17,14 @@ public class CompressBackupPolicy implements BackupPolicy {
 
 	private final static Logger LOGGER = Logger.getLogger(CompressBackupPolicy.class.getName());
 
+	private final static Comparator<File> filesComparator = Comparator
+			.comparingLong(File::lastModified)
+			.thenComparing(File::getName);
+
 	/**
 	 * list is thread-safe
 	 */
-	private final List<File> trackedFiles = Collections.synchronizedList(new LinkedList<>());
+	private final Collection<File> trackedFiles = Collections.synchronizedSet(new TreeSet<>(filesComparator));
 
 	private final AtomicBoolean initialCleanupPerformed = new AtomicBoolean(false);
 
@@ -79,6 +81,10 @@ public class CompressBackupPolicy implements BackupPolicy {
 		if (!trackedFiles.contains(file)) {
 			trackedFiles.add(file);
 		}
+		onTrackFilesAdded();
+	}
+
+	private void onTrackFilesAdded() {
 		if (initialCleanupPerformed.compareAndSet(false, true)) {
 			if (preExistingFilesCleanupConfiguration.enabled) {
 				executorService.submit(new CatchingExceptionRunnable(() -> cleanupPreExistingLogFiles(preExistingFilesCleanupConfiguration.logDirectory, preExistingFilesCleanupConfiguration.filenamePattern)));
@@ -95,6 +101,12 @@ public class CompressBackupPolicy implements BackupPolicy {
 	void cleanupPreExistingLogFiles(File logDirectory, String filenamePattern) {
 		List<File> existingLogFilesList = filesFinder.findFiles(logDirectory, filenamePattern);
 		filesProcessingStrategy.processFilesList(existingLogFilesList, configuration.getKeepAsIs(), compressFileCallback);
+
+		// insert remaining files at the beginning of the trackedFiles
+		if (!existingLogFilesList.isEmpty()) {
+			trackedFiles.addAll(existingLogFilesList);
+			onTrackFilesAdded();
+		}
 	}
 
 	void cleanupPreExistingCompressedFiles(File logDirectory, String filenamePattern) {
