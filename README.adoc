@@ -54,7 +54,7 @@ This project is licensed under ```Apache License 2.0```.
 
 Copyright (c) Credit Agriole Payment Services since 2018.
 
-Initial Authors and Contributors are : Jean-Yves CRONIER, Yann ROBERT, and Bastien JANSEN.
+Initial Authors and Contributors are : Yann ROBERT.
 
 Credit Agriole Payment Services is the Licensor, releasing the project under Apache License 2.0.
 
