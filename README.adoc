@@ -42,3 +42,7 @@ gca.xap.logger.CompressBackupPolicy.keepCompressed.maxFilesCount = 350
 # when maxFilesCount is reached, files will be processed even if minRetentionInMilliseconds has not been reached. (requires >= minFilesCount)
 # when minFilesCount is reached, files will be processed unless if minRetentionInMilliseconds has not been reached (requires > 0)
 ```
+
+== Deployment
+
+Put the xap-backup-policies JAR file in `$XAP_HOME/lib`
