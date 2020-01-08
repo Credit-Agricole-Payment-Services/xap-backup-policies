@@ -52,7 +52,7 @@ Put the xap-backup-policies JAR file in `$XAP_HOME/lib`
 
 This project is licensed under ```Apache License 2.0```.
 
-Copyright (c) Credit Agriole Payment Services since 2018.
+Copyright (c) Credit Agriole Payment Services since 2019.
 
 Initial Authors and Contributors are : Yann ROBERT.
 
